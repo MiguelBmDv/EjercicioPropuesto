@@ -1,201 +1,153 @@
-from datetime import date
+# Importar fecha para el registro y creacion de variable de la fecha en que se realiza la operacion
 from datetime import datetime
-
 fecha= datetime.now()
+# Creacion de lista GLOBAL para almacenar cada instancia
+listaRegistro = []
 
-class Equipos():
-   def __init__(self, clave,dispositivos,novedad):
-      self.clave = 0
-      self.dispositivos = ""
-      self.novedad = ""
-      
-      # def ambiente(self):
-      
+#Clase equipo con metodo constructor para iniciar los atributos clave, dispositivos, novedad y ambiente
+class Equipos:
+   def __init__(self, clave, dispositivos, novedad, ambiente):
+       self.clave = clave
+       self.dispositivos = dispositivos
+       self.novedad = novedad
+       self.ambiente = ambiente
+#subclase persona que ehreda atributos del metodo constructor, y s añaden 2 propios
+class Persona(Equipos):
+    def __init__(self, clave, name, apellido, dispositivos, novedad, ambiente):
+       super().__init__(clave, dispositivos, novedad, ambiente)
+       self.name = name
+       self.apellido = apellido
+#metodos de la subclase persona, este es para hacer funciones entorno a la clase y no a la instancia
+#El @classmethod indica que el siguiente metodo sera para una clase, y en la clase siguiente se le pone de atributo "cls", aunque puede ir otra cosa, es lo que identificara al metodo al ser llamada, algo asi como cuando hacemos un for y predeterminadamente dejamos una variable "I"
 
-      # def dispositivos(self):
+    @classmethod
+    #Metodo para obtener los datos de registro de un equipos desde 0
+    def obtenerDatosPersona(cls):
+        while True:
+            clave = input("Ingrese el id del equipo o 0 para finalizar: ")
+            if clave == "0":
+                break
+            name = input("Ingrese el nombre del encargado: ")
+            apellido = input("Ingrese el apellido del encargado: ")
+            #Se llama el metodo clase de registro de dispositivos
+            dispositivos = cls.registrarDispositivos()
+            novedad = input("Ingrese la novedad o 0 para seguir: ")
+            if novedad == "0":
+                novedad = "Ninguna"
+            novedad = str(fecha) + " " +novedad
+            ambiente = input("Ingrese el ambiente: ")
+            if clave != "0":
+                return cls(clave, name, apellido, dispositivos, novedad, ambiente)
+    #Metodo para registrar los dispositivos, estos se agregan en el metodo anterior
+    @classmethod
+    def registrarDispositivos(cls):
+        while True:
+            dispoPreg = input("Cuenta con mouse? (s/n): ").lower()
+            dispoPreg2 = input("Cuenta con cargador? (s/n): ").lower()
+            if dispoPreg == "s" and dispoPreg2 == "s":
+                return "cargador y mouse"
+            elif dispoPreg == "s" and dispoPreg2 == "n":
+                return "Mouse"
+            elif dispoPreg == "n" and dispoPreg2 == "s":
+                return "cargador"
+            else:
+                return "Sin dispositivos"
+   #Metodo para registrar nuevos o actualizar los dispositivos de un equipo registrado
+    @classmethod
+    def actualizarDispositivos(cls):
+        claveEquipo = input("Ingrese el id del equipo al que desea agregar o actualizar dispositivos: ")
+        for persona in listaRegistro:
+            if persona.clave == claveEquipo:
+                #Se actualiza llama el metodo de registro de equipos para luego almacenarlo en el atributo dispositivo del id encontrado
+                nuevosDispositivos = cls.registrarDispositivos()
+                persona.dispositivos = nuevosDispositivos
+                print("Dispositivos actualizados correctamente.")
+                return
+        print("Equipo no encontrado.")
+    #Metodo de actualizacion de novedades, al igual que el anterior este busca el id del equipo en la lista, y por ultimo hace una pregunta donde se almacenara la novedad, esta de concatena con la fecha actual para el reporte
+    @classmethod
+    def actualizarNovedad(cls):
+       claveEquipo = input("Ingrese el id del equipo al que desea agregar o actualizar la novedad: ")
+       for persona in listaRegistro:
+           if persona.clave == claveEquipo:
+               nuevaNovedad = input("Ingrese la nueva novedad: ")
+               persona.novedad = str(fecha) + " "+nuevaNovedad
+               print("Novedad actualizada correctamente.")
+               return
+       print("Equipo no encontrado.")
+    #En est se busca el equipo para hacer la eliminacion de la lista, con el remove, donde remueve a la instancia de la clase persona con el id (atributo) encontrado
+    @classmethod
+    def eliminarEquipo(cls):
+         claveEquipo = input("Ingrese el id del equipo que desea eliminar: ")
+         for persona in listaRegistro:
+             if persona.clave == claveEquipo:
+                 listaRegistro.remove(persona)
+                 print("Equipo eliminado correctamente.")
+                 return
+         print("Equipo no encontrado.")
+    #Metodo que a partir del id encontrado, agrega el ambiente o actualizacion a un equipo existente, funciona igual que los otros metodos,donde el valor sera incrustado en el atributo de esa instancia
+    @classmethod
+    def agregarAmbiente(cls):
+         claveEquipo = input("Ingrese el id del equipo al que desea agregar el ambiente: ")
+         for persona in listaRegistro:
+             if persona.clave == claveEquipo:
+                 nuevoAmbiente = input("Ingrese el nuevo numero de ambiente: ")
+                 persona.ambiente = nuevoAmbiente
+                 print("Ambiente actualizado correctamente.")
+                 return
+         print("Equipo no encontrado.")
+    #Por ultimo este metodo trae todos los valores de la instancia persona encontrada en el registro :)
+    @classmethod
+    def consultarEquipo(cls):
+         claveEquipo = input("Ingrese el id del equipo que desea consultar: ")
+         for persona in listaRegistro:
+             if persona.clave == claveEquipo:
+                 print(f"\nDatos del equipo {claveEquipo}:")
+                 print(f"Nombre del encargado: {persona.name} {persona.apellido}")
+                 print(f"Dispositivos: {persona.dispositivos}")
+                 print(f"Novedad: {persona.novedad}")
+                 print(f"Ambiente: {persona.ambiente}")
+                 return
+         print("Equipo no encontrado.")
 
+#Esta funcion sera para llamarse en el programa principal en el caso de que hayan mas sub programas o menus, pero directamente puede ser esta el programa principal
+def menu():
+   #En este bucle se muestran las opciones que hay para realizar
+   while True:
+       print("\nBienvenido al menu principal \n1.Registrar un nuevo computador \n2.Registrar dispositivos o actualizar informacion\n3.Agregar o actualizar una novedad \n4.Eliminar un equipo \n5.Agregar el ambiente al que pertenece un equipo \n6.Consultar un equipo \n7.Salir" )
 
-      # def novedad(self):
+       #Cada opcion es igual a las demas, son un texto print acompañadas de un metodo de la clase persona, y como cada metodo tiene su "menu" se haran las operaciones en estos, el unico en cambiar es la opcion 1, donde al realizar el registro, el metodo de clase retorna la instancia, y ese valor retornado se usa para agregarlo a la lista :)
 
-
-      # def recuperarId(self):
-
-class Persona(Equipos): 
-   def __init__(self, clave,name,apellido):
-      super().__init__(self,clave)
-      self.name = ""
-      self.apellido = ""
-
-class Ambiente(Equipos):
-    def __init__(self, clave,numero):
-       super().__init__(self,clave)
-       self.numero = 0
-
-equipos = {
-    'equipo1': Equipos(1, '', ''),
-    'equipo2': Equipos(2, '', ''),
-    'equipo3': Equipos(3, '', ''),
-    'equipo4': Equipos(4, '', ''),
-    'equipo5': Equipos(5, '', ''),
-    'equipo6': Equipos(6, '', ''),
-    'equipo7': Equipos(7, '', ''),
-    'equipo8': Equipos(8, '', ''),
-    'equipo9': Equipos(9, '', ''),
-    'equipo10': Equipos(10, '', ''),
-    'equipo11': Equipos(11, '', ''),
-    'equipo12': Equipos(12, '', ''),
-    'equipo13': Equipos(13, '', ''),
-    'equipo14': Equipos(14, '', ''),
-    'equipo15': Equipos(15, '', ''),
-}
-
-personas = {
-   'persona1':Persona("Maria","Molano",1),
-
-}
-
-
-# def menu():
-#   while True:
-#     print("Bienvenido al menu principal \n1.Registrar un nuevo computador \n2.Registrar dispositivos o actualizar a un equipo existente \n3.Agregar o actualizar una novedad \n4.Eliminar una novedad \n5.Eliminar un equipo \n6.Agregar el ambiente al que pertenece un equipo \n7.Consultar un equipo \n8. Salir" )
-#     opc=input("\nDigite una opcion para continuar: ")
-#     if opc=="1":
-#       while True:
-#         print("\nHola, bienvenido al registro de computadores, ingrese el id del equipo y nombre del encargado")
-#         id=int(input("Digite el id del equipo o (0 para finalizar): "))
-#         if id == 0:
-#            break
-#         nombre=input("Digite el nombre del encargado: ")
-#         if id in equipos:
-#            print ("Ya existe el id del equipo")
-#         elif id not in equipos:
-#           equipos[id]=[nombre,"",""]
-#           print(f"\nBien, equipo registrado señor/a {nombre}, Ahora ingresa a que ambiente pertenece, que dispositivos tiene en su computador y si cuenta con alguna novedad")
-
-#           ambient = int(input("Digite el numero del ambiente al que pertenece: "))
-#           ambiente(id, 3, ambient)
-#           print("Ambiente agregado")
-#           dispo1=input("Cuenta con cargador s/n: ").lower()
-#           dispo2=input("Cuenta con mouse s/n: ").lower()
-
-#           if dispo1 == "s" and dispo2 == "s":
-#             dispositivos(id, 1, "cargador y mouse")
-#           elif dispo1 == "s" and dispo2 == "n":
-#             dispositivos(id, 1, "cargador")
-#           elif dispo1 == "n" and dispo2 == "s":
-#             dispositivos(id, 1, "mouse")
-#           else:
-#             dispositivos(id, 1, "Sin dispositivos")
-#           while dispo1 and dispo2 != None:
-#             preg=input(f"El equipo {id} cuenta con alguna novedad s/n: ").lower()
-#             if preg == "s":
-#                 desc=input("Describa su novedad: ").title()
-#                 novedad(id, 2, str(fecha) +" "+desc)
-#                 break
-#             elif preg == "n":
-#                 break  
-          
-#     elif opc=="2":
-#       while True:
-#         print("\nHola, bienvenido al registro de dispositivos, ingrese el id del equipo")
-#         id=int(input("Digite el id del equipo (0 para finalizar): "))
-#         if id == 0:
-#            break
-#         if id in equipos:
-#           dispo1=input("Cuenta con cargador s/n: ").lower()
-#           dispo2=input("Cuenta con mouse s/n: ").lower()
-#           if dispo1 == "s" and dispo2 == "s":
-#             dispositivos(id, 1, "cargador y mouse")
-#           elif dispo1 == "s" and dispo2 == "n":
-#              dispositivos(id, 1, "cargador")
-#           elif dispo1 == "n" and dispo2 == "s":
-#              dispositivos(id, 1, "mouse")
-#           else:
-#              dispositivos(id, 1, "Sin dispositivos")
-#         else:
-#           preg=input(f"El equipo {id} no existe, ingrese el nombre del tutor para restablecer su id o salir para finalizar: \nRecuerde escribir el nombre seguido de un espacio y la inicial del segundo nombre o apellido \n").title()
-#           recuperarId(preg)
-#           if preg == "Salir":
-#              break
-#     elif opc=="3":
-#       while True:
-#         print("\nHola, bienvenido al registro de novedades, ingrese el id del equipo")
-#         id=int(input("Digite el id del equipo (0 para finalizar): "))
-#         if id == 0:
-#            break
-#         if id in equipos:
-#           desc=input("Describa su novedad: ").title()
-#           novedad(id, 2, str(fecha) +" "+desc)
-#         else:
-#           preg=input(f"El equipo {id} no existe, ingrese el nombre del tutor para restablecer su id o salir para finalizar: \nRecuerde escribir el nombre seguido de un espacio y la inicial del segundo nombre o apellido \n").title()
-#           recuperarId(preg)
-#           if preg == "Salir":
-#              break
-#     elif opc=="4":
-#       while True:
-#         print("\nHola, bienvenido al eliminador de novedades, ingrese el id del equipo")
-#         id=int(input("Digite el id del equipo (0 para finalizar): "))
-#         if id == 0:
-#            break
-#         if id in equipos:
-#           novedad(id, 2, str(fecha) + " Novedad Eliminada")
-#         else:
-#           preg=input(f"El equipo {id} no existe, ingrese el nombre del tutor para restablecer su id o salir para finalizar: \nRecuerde escribir el nombre seguido de un espacio y la inicial del segundo nombre o apellido \n").title()
-#           recuperarId(preg)
-#           if preg == "Salir":
-#              break
-#     elif opc=="5":
-#       while True:
-#         print("\nHola, bienvenido al menu para eliminar un equipo, ingrese el id del equipo")
-#         id=int(input("Digite el id del equipo (0 para finalizar): "))
-#         if id == 0:
-#            break
-#         if id in equipos:
-#           del equipos[id]
-#           print("Equipo eliminado con exito")
-#         else:
-#           preg=input(f"El equipo {id} no existe, ingrese el nombre del tutor para restablecer su id o salir para finalizar: \nRecuerde escribir el nombre seguido de un espacio y la inicial del segundo nombre o apellido \n").title()
-#           recuperarId(preg)
-#           if preg == "Salir":
-#              break
-#     elif opc =="6":
-#        print("\nHola, Bienvenido al agregador de ambientes, busca un equipo por su id")
-#        id=int(input("Digite el id del equipo (0 para finalizar): "))
-#        if id == 0:
-#            break
-#        if id in equipos:
-#           n=input("Escriba el numero del ambiente: ")
-#           ambiente(id, 3, n)
-#     elif opc=="7":
-#       while True:
-#         print("\nHola, Bienvenido al menu de consultas, busca un equipo por su id")
-#         id=int(input("Digite el id del equipo (0 para finalizar): "))
-#         if id == 0:
-#            break
-#         if id in equipos:
-#           print(f"Equipo {id}\nEncargado:")
-#           for i in equipos[id]:
-#             print (i)
-#           print("Equipo encontrado con exito")
-#         else:
-#           preg=input(f"El equipo {id} no existe, ingrese el nombre del tutor para restablecer su id o salir para finalizar: \nRecuerde escribir el nombre seguido de un espacio y la inicial del segundo nombre o apellido \n").title()
-#           recuperarId(preg)
-#           if preg == "Salir":
-#              break
-#     elif opc=="8":
-#         break
-#     else:
-#       print("Elegir una opcion valida")
-
-# while True:
-#   print("Bienvenido al sistema General del sena")
-#   opcG=int(input("Elige una opcion: \n1.Entrar en el Gestor de equipos \n2.Coming soon \n3.Salir\nDigite aqui: "))
-#   if opcG==1:
-#       menu()
-#   elif opcG==2:
-#       print("Coming soon")
-#   elif opcG==3:
-#       print("Gracias por usar el sistema")
-#       break
-#   else:
-#       print("Elegir una opcion valida")
+       opc = input("\nDigite una opcion para continuar: ")
+       if opc == "1":
+            print("\nHola, bienvenido al registro de computadores")
+            personaRegistro = Persona.obtenerDatosPersona()
+            listaRegistro.append(personaRegistro)
+             
+       elif opc == "2":
+           print("\nHola, bienvenido al actualizador de dispositivos")
+           Persona.actualizarDispositivos()
+         
+       elif opc == "3":
+           print("\nHola, bienvenido al actualizador de novedades")
+           Persona.actualizarNovedad()
+         
+       elif opc == "4":
+           print("\nHola, bienvenido al eliminador de equipos")
+           Persona.eliminarEquipo()
+         
+       elif opc == "5":
+           print("\nHola, bienvenido al actulizador de ambientes")
+           Persona.agregarAmbiente()
+         
+       elif opc == "6":
+           print("\nHola, bienvenido a lugar de registro, consulta tu equipo ")
+           Persona.consultarEquipo()
+         
+       elif opc == "7":
+           print("Saliendo del programa. ¡Hasta luego!")
+           break
+       else:
+           print("Opción no válida. Por favor, seleccione una opción válida.")
+#Se llama la funcion al programa principal e iniciar la ejecucion de este
+menu()

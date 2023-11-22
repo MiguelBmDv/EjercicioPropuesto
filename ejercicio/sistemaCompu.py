@@ -1,7 +1,7 @@
 from datetime import date
 from datetime import datetime
 
-fecha= datetime.now()
+fecha= datetime.now() 
 
 equipos={1:['Maria F','','',''],2:['Miguel A','','',''],3:['Kevin L','','',''],4:['Santiago T','','',''],5:['Mathew G','','',''],6:['Maria P','','',''],7:['Kevin E','','',''],8:['Adriana L','','',''],9:['Sebastian P','','',''],10:['Sandra M','','',''],11:['Cristian A','','',''],12:['Matias G','','',''],13:['Kevin H','','',''],14:['Juan D','','',''],15:['Sebastian T','','',''],16:['Laura E','','','']}
 
